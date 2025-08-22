@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Itinerarios - Turismo Maule</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url('https://static.wixstatic.com/media/2fe42d_67f5b9f2f1af4d3e8dfd590dc2dcaf31~mv2.jpg/v1/fill/w_2480,h_1566,al_c,q_90/2fe42d_67f5b9f2f1af4d3e8dfd590dc2dcaf31~mv2.webp') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+
+        .overlay {
+            background-color: rgba(0,0,0,0.6);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: rgba(255,255,255,0.95);
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        select, button, input {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay container">
+        <h1 class="text-center mb-4">📋 Mis Itinerarios</h1>
+
+        <!-- Login -->
+        <div class="card p-3 mb-4">
+            <h4>Usuario</h4>
+            <input type="email" id="emailInput" class="form-control" placeholder="Correo electrónico">
+            <input type="password" id="passwordInput" class="form-control" placeholder="Contraseña">
+            <button id="loginBtn" class="btn btn-primary">Login</button>
+            <button id="registerBtn" class="btn btn-secondary">Registrar</button>
+            <div id="userStatus" class="mt-2"></div>
+        </div>
+
+        <div id="itinerariosContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+let jwtToken = null;
+let usuarioId = null;
+
+const emailInput = document.getElementById("emailInput");
+const passwordInput = document.getElementById("passwordInput");
+const loginBtn = document.getElementById("loginBtn");
+const registerBtn = document.getElementById("registerBtn");
+const userStatus = document.getElementById("userStatus");
+const itinerariosContainer = document.getElementById("itinerariosContainer");
+
+// -------------------- LOGIN / REGISTER --------------------
+registerBtn.addEventListener("click", async () => {
+  const res = await fetch('https://localhost:5001/api/auth/register', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body: JSON.stringify({ Nombre: emailInput.value, Email: emailInput.value, PasswordHash: passwordInput.value })
+  });
+  const data = await res.json();
+  alert(data.message);
+});
+
+loginBtn.addEventListener("click", async () => {
+  const res = await fetch('https://localhost:5001/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body: JSON.stringify({ Email: emailInput.value, PasswordHash: passwordInput.value })
+  });
+  if(res.status === 200){
+    const data = await res.json();
+    jwtToken = data.token;
+    usuarioId = data.userId;
+    userStatus.innerText = `Usuario: ${data.nombre} (loggeado)`;
+    alert("Login exitoso");
+    cargarItinerarios();
+  } else {
+    alert("Usuario o contraseña incorrecta");
+  }
+});
+
+// -------------------- CARGAR ITINERARIOS --------------------
+async function cargarItinerarios() {
+  if(!jwtToken) return;
+  const res = await fetch(`https://localhost:5001/api/itinerarios/usuario/${usuarioId}`, {
+    headers: { 'Authorization': `Bearer ${jwtToken}` }
+  });
+  const itinerarios = await res.json();
+  itinerariosContainer.innerHTML = "";
+
+  itinerarios.forEach(itin => {
+    const card = document.createElement("div");
+    card.classList.add("card", "p-3");
+
+    let bloquesHTML = itin.Bloques.map(b => `<li>${b.Hora} - ${b.Bloque} (Lugar ID: ${b.LugarId})</li>`).join("");
+
+    card.innerHTML = `
+      <h5>${itin.Nombre}</h5>
+      <ul>${bloquesHTML}</ul>
+      <button class="btn btn-warning btn-sm generarImgBtn">🖼️ Imagen</button>
+      <button class="btn btn-danger btn-sm eliminarBtn">🗑️ Eliminar</button>
+    `;
+
+    // Generar imagen
+    card.querySelector(".generarImgBtn").addEventListener("click", () => {
+      html2canvas(card).then(canvas => {
+        const w = window.open("");
+        w.document.write(canvas.outerHTML);
+      });
+    });
+
+    // Eliminar itinerario
+    card.querySelector(".eliminarBtn").addEventListener("click", async () => {
+      if(!confirm("¿Eliminar este itinerario?")) return;
+      const resDel = await fetch(`https://localhost:5001/api/itinerarios/${itin.Id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${jwtToken}` }
+      });
+      if(resDel.status===200){
+        alert("Itinerario eliminado");
+        cargarItinerarios();
+      } else {
+        alert("Error al eliminar");
+      }
+    });
+
+    itinerariosContainer.appendChild(card);
+  });
+}
+    </script>
+</body>
+</html>

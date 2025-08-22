@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turismo Maule</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: url('https://static.wixstatic.com/media/2fe42d_67f5b9f2f1af4d3e8dfd590dc2dcaf31~mv2.jpg/v1/fill/w_2480,h_1566,al_c,q_90/2fe42d_67f5b9f2f1af4d3e8dfd590dc2dcaf31~mv2.webp') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+
+        .overlay {
+            background-color: rgba(0,0,0,0.6);
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .btn-cat {
+            margin: 5px;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background-color: rgba(255,255,255,0.95);
+            color: #000;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay container text-center">
+        <h1 class="mb-4">🌄 Turismo Maule</h1>
+
+        <div class="mb-4">
+            <label for="ciudadSelect" class="form-label fw-bold">Selecciona ciudad:</label>
+            <select id="ciudadSelect" class="form-select w-50 mx-auto">
+                <option value="">-- Selecciona --</option>
+                <option value="Curicó">Curicó</option>
+                <option value="Talca">Talca</option>
+                <option value="Linares">Linares</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <button class="btn btn-primary btn-cat" data-cat="comida"><i class="fas fa-utensils"></i> Comida</button>
+            <button class="btn btn-success btn-cat" data-cat="cafe"><i class="fas fa-mug-hot"></i> Café</button>
+            <button class="btn btn-warning btn-cat" data-cat="cultura"><i class="fas fa-landmark"></i> Cultura</button>
+            <button class="btn btn-info btn-cat" data-cat="paisajes"><i class="fas fa-mountain"></i> Paisajes</button>
+            <button class="btn btn-secondary btn-cat" data-cat="hospedaje"><i class="fas fa-bed"></i> Hospedaje</button>
+        </div>
+
+        <div id="lugaresContainer"></div>
+
+        <a href="itinerario.html" class="btn btn-danger btn-lg mt-3">📝 Generar Itinerario</a>
+    </div>
+
+    <script>
+        const ciudadSelect = document.getElementById("ciudadSelect");
+        const lugaresContainer = document.getElementById("lugaresContainer");
+        const categoriaBtns = document.querySelectorAll(".btn-cat");
+
+        categoriaBtns.forEach(btn => {
+            btn.addEventListener("click", async () => {
+                const ciudad = ciudadSelect.value;
+                if (!ciudad) { alert("Selecciona primero una ciudad"); return; }
+
+                const categoria = btn.dataset.cat;
+                const res = await fetch(`https://localhost:5001/api/lugares?ciudad=${ciudad}&categoria=${categoria}`);
+                const data = await res.json();
+
+                lugaresContainer.innerHTML = "";
+                data.forEach(l => {
+                    const card = document.createElement("div");
+                    card.classList.add("card", "p-3");
+                    card.innerHTML = `
+            <h5>${l.Nombre}</h5>
+            <p>Categoria: ${l.Categoria}</p>
+            <p>Calificación: ${l.Calificacion}</p>
+            <p>Horario: ${l.Horario}</p>
+            <p>Dirección: ${l.Direccion}</p>
+            ${l.Imagen ? `<img src="${l.Imagen}" class="img-fluid rounded">` : ""}
+          `;
+                    lugaresContainer.appendChild(card);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
