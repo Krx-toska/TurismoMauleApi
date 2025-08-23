@@ -3,91 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Turismo Maule</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Turismo Andes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
-            background: url('https://static.wixstatic.com/media/2fe42d_67f5b9f2f1af4d3e8dfd590dc2dcaf31~mv2.jpg/v1/fill/w_2480,h_1566,al_c,q_90/2fe42d_67f5b9f2f1af4d3e8dfd590dc2dcaf31~mv2.webp') no-repeat center center fixed;
-            background-size: cover;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f8f9fa;
+            margin-top: 70px;
+        }
+
+        .navbar-custom {
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+        }
+
+        .hero {
+            background: url("https://static.wixstatic.com/media/2fe42d_67f5b9f2f1af4d3e8dfd590dc2dcaf31~mv2.jpg/v1/fill/w_2480,h_1566,al_c,q_90/2fe42d_67f5b9f2f1af4d3e8dfd590dc2dcaf31~mv2.webp") center no-repeat;
+            height: 75vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
+            position: relative;
         }
 
-        .overlay {
-            background-color: rgba(0,0,0,0.6);
-            min-height: 100vh;
-            padding: 30px;
+            .hero::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.55);
+            }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
         }
 
-        .btn-cat {
+        .category-btn {
+            border-radius: 50px;
+            padding: 12px 25px;
             margin: 5px;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
 
-        .card {
-            background-color: rgba(255,255,255,0.95);
-            color: #000;
-            margin-bottom: 20px;
-        }
+            .category-btn:hover {
+                transform: scale(1.05);
+            }
     </style>
 </head>
 <body>
-    <div class="overlay container text-center">
-        <h1 class="mb-4">🌄 Turismo Maule</h1>
 
-        <div class="mb-4">
-            <label for="ciudadSelect" class="form-label fw-bold">Selecciona ciudad:</label>
-            <select id="ciudadSelect" class="form-select w-50 mx-auto">
-                <option value="">-- Selecciona --</option>
-                <option value="Curicó">Curicó</option>
-                <option value="Talca">Talca</option>
-                <option value="Linares">Linares</option>
-            </select>
+    <!-- Navbar Fijo -->
+    <nav class="navbar navbar-expand-lg navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">Turismo Maule</a>
+            <div class="d-flex">
+                <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#authModal">Iniciar Sesión</button>
+                <a href="itinerario.html" class="btn btn-warning">Crear Itinerario</a>
+            </div>
         </div>
+    </nav>
 
-        <div class="mb-4">
-            <button class="btn btn-primary btn-cat" data-cat="comida"><i class="fas fa-utensils"></i> Comida</button>
-            <button class="btn btn-success btn-cat" data-cat="cafe"><i class="fas fa-mug-hot"></i> Café</button>
-            <button class="btn btn-warning btn-cat" data-cat="cultura"><i class="fas fa-landmark"></i> Cultura</button>
-            <button class="btn btn-info btn-cat" data-cat="paisajes"><i class="fas fa-mountain"></i> Paisajes</button>
-            <button class="btn btn-secondary btn-cat" data-cat="hospedaje"><i class="fas fa-bed"></i> Hospedaje</button>
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content container">
+            <h1 class="display-4 fw-bold">Descubre lo mejor de la VII Region</h1>
+            <p class="lead">Elige tu ciudad y encuentra experiencias únicas</p>
+            <div class="input-group w-75 mx-auto mt-4">
+                <input type="text" class="form-control" placeholder="Buscar ciudad..." id="ciudadInput">
+                <button class="btn btn-primary" id="buscarBtn">Buscar</button>
+            </div>
+            <div class="mt-4">
+                <button class="btn btn-outline-primary category-btn"><i class="bi bi-egg-fried me-2"></i>Comida</button>
+                <button class="btn btn-outline-success category-btn"><i class="bi bi-cup-hot me-2"></i>Cafés</button>
+                <button class="btn btn-outline-info category-btn"><i class="bi bi-bank me-2"></i>Cultura</button>
+                <button class="btn btn-outline-warning category-btn"><i class="bi bi-tree me-2"></i>Paisajes</button>
+                <button class="btn btn-outline-danger category-btn"><i class="bi bi-house-heart me-2"></i>Hospedaje</button>
+            </div>
         </div>
+    </section>
 
-        <div id="lugaresContainer"></div>
+    <!-- Modal Login / Registro -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bienvenido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs mb-3" id="authTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginTab" type="button">Login</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerTab" type="button">Registro</button>
+                        </li>
+                    </ul>
 
-        <a href="itinerario.html" class="btn btn-danger btn-lg mt-3">📝 Generar Itinerario</a>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="loginTab">
+                            <form>
+                                <div class="mb-3">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Contraseña</label>
+                                    <input type="password" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade" id="registerTab">
+                            <form>
+                                <div class="mb-3">
+                                    <label>Nombre</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Contraseña</label>
+                                    <input type="password" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100">Registrarse</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        const ciudadSelect = document.getElementById("ciudadSelect");
-        const lugaresContainer = document.getElementById("lugaresContainer");
-        const categoriaBtns = document.querySelectorAll(".btn-cat");
-
-        categoriaBtns.forEach(btn => {
-            btn.addEventListener("click", async () => {
-                const ciudad = ciudadSelect.value;
-                if (!ciudad) { alert("Selecciona primero una ciudad"); return; }
-
-                const categoria = btn.dataset.cat;
-                const res = await fetch(`https://localhost:5001/api/lugares?ciudad=${ciudad}&categoria=${categoria}`);
-                const data = await res.json();
-
-                lugaresContainer.innerHTML = "";
-                data.forEach(l => {
-                    const card = document.createElement("div");
-                    card.classList.add("card", "p-3");
-                    card.innerHTML = `
-            <h5>${l.Nombre}</h5>
-            <p>Categoria: ${l.Categoria}</p>
-            <p>Calificación: ${l.Calificacion}</p>
-            <p>Horario: ${l.Horario}</p>
-            <p>Dirección: ${l.Direccion}</p>
-            ${l.Imagen ? `<img src="${l.Imagen}" class="img-fluid rounded">` : ""}
-          `;
-                    lugaresContainer.appendChild(card);
-                });
-            });
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
