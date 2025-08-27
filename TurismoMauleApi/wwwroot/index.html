@@ -6,31 +6,32 @@
     <title>Turismo Maule</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
-            margin-top: 70px;
             background-color: #f8f9fa;
+            margin: 0;
+            padding-top: 70px;
         }
-        /* Navbar fijo */
+
         .navbar-custom {
             background-color: #fff;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             position: fixed;
             top: 0;
-            width: 100%;
+            left: 0;
+            right: 0;
             z-index: 1030;
         }
-        /* Hero */
+
         .hero {
-            background: url('https://static.wixstatic.com/media/2fe42d_67f5b9f2f1af4d3e8dfd590dc2dcaf31~mv2.jpg/v1/fill/w_2480,h_1566,al_c,q_90/2fe42d_67f5b9f2f1af4d3e8dfd590dc2dcaf31~mv2.webp') center/cover no-repeat;
+            background: url("images/cordillera.jpg") center/cover no-repeat;
             height: 75vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            position: relative;
+            justify-content: center;
             color: white;
+            position: relative;
         }
 
             .hero::after {
@@ -40,21 +41,16 @@
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background: rgba(0,0,0,0.55);
+                background: rgba(0,0,0,0.55); /* Oscurece la imagen para contraste */
             }
 
         .hero-content {
             position: relative;
             z-index: 2;
             text-align: center;
+            padding-top: 50px;
         }
-        /* Buscador */
-        .search-box {
-            background: rgba(0,0,0,0.6);
-            padding: 20px;
-            border-radius: 15px;
-        }
-        /* Botones de categoría */
+
         .category-btn {
             border-radius: 50px;
             padding: 12px 25px;
@@ -66,18 +62,17 @@
             .category-btn:hover {
                 transform: scale(1.05);
             }
-        /* Mapa */
+
         #map {
-            height: 500px;
+            height: 400px;
+            width: 100%;
             margin-top: 20px;
-        }
-        /* Actividades */
-        #actividades {
-            margin-top: 20px;
+            border-radius: 10px;
         }
 
-        .card-activity {
-            margin-bottom: 15px;
+        .input-group {
+            max-width: 500px;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -94,35 +89,30 @@
         </div>
     </nav>
 
-    <!-- Hero / Banner -->
+    <!-- Hero -->
     <section class="hero">
         <div class="hero-content container">
-            <h1 class="display-4 fw-bold mb-3">Descubre lo mejor de la VII Región</h1>
-            <div class="search-box">
-                <input id="searchInput" type="text" class="form-control mb-2" placeholder="Buscar ciudad...">
-                <button id="searchBtn" class="btn btn-light w-100 mb-2">Buscar</button>
-                <div class="d-flex flex-wrap justify-content-center mt-2">
-                    <button class="btn btn-outline-primary category-btn" data-cat="comida"><i class="bi bi-egg-fried me-2"></i>Comida</button>
-                    <button class="btn btn-outline-success category-btn" data-cat="cafes"><i class="bi bi-cup-hot me-2"></i>Cafés</button>
-                    <button class="btn btn-outline-info category-btn" data-cat="cultura"><i class="bi bi-bank me-2"></i>Cultura</button>
-                    <button class="btn btn-outline-warning category-btn" data-cat="paisajes"><i class="bi bi-tree me-2"></i>Paisajes</button>
-                    <button class="btn btn-outline-danger category-btn" data-cat="hospedaje"><i class="bi bi-house-heart me-2"></i>Hospedaje</button>
-                </div>
+            <h1 class="display-4 fw-bold">Descubre lo mejor de la VII Región</h1>
+            <p class="lead">Elige tu ciudad y encuentra experiencias únicas</p>
+            <div class="input-group mt-4">
+                <input type="text" class="form-control" placeholder="Buscar ciudad..." id="ciudadInput">
+                <button class="btn btn-primary" id="buscarBtn">Buscar</button>
+            </div>
+            <div class="mt-4">
+                <button class="btn btn-outline-primary category-btn"><i class="bi bi-egg-fried me-2"></i>Comida</button>
+                <button class="btn btn-outline-success category-btn"><i class="bi bi-cup-hot me-2"></i>Cafés</button>
+                <button class="btn btn-outline-info category-btn"><i class="bi bi-bank me-2"></i>Cultura</button>
+                <button class="btn btn-outline-warning category-btn"><i class="bi bi-tree me-2"></i>Paisajes</button>
+                <button class="btn btn-outline-danger category-btn"><i class="bi bi-house-heart me-2"></i>Hospedaje</button>
             </div>
         </div>
     </section>
 
     <!-- Mapa -->
-    <div class="container mt-4">
-        <h2 class="text-center">Mapa</h2>
+    <section class="container my-5">
+        <h2 class="fw-bold mb-3">Mapa</h2>
         <div id="map"></div>
-    </div>
-
-    <!-- Actividades -->
-    <div class="container" id="actividades">
-        <h3 class="mt-4">Actividades disponibles</h3>
-        <div class="row" id="actividadCards"></div>
-    </div>
+    </section>
 
     <!-- Modal Login / Registro -->
     <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
@@ -141,124 +131,52 @@
                             <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerTab" type="button">Registro</button>
                         </li>
                     </ul>
+
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="loginTab">
                             <form>
-                                <div class="mb-3"><label>Email</label><input type="email" class="form-control" required></div>
-                                <div class="mb-3"><label>Contraseña</label><input type="password" class="form-control" required></div>
+                                <div class="mb-3">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Contraseña</label>
+                                    <input type="password" class="form-control" required>
+                                </div>
                                 <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
                             </form>
                         </div>
+
                         <div class="tab-pane fade" id="registerTab">
                             <form>
-                                <div class="mb-3"><label>Nombre</label><input type="text" class="form-control" required></div>
-                                <div class="mb-3"><label>Email</label><input type="email" class="form-control" required></div>
-                                <div class="mb-3"><label>Contraseña</label><input type="password" class="form-control" required></div>
+                                <div class="mb-3">
+                                    <label>Nombre</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Contraseña</label>
+                                    <input type="password" class="form-control" required>
+                                </div>
                                 <button type="submit" class="btn btn-success w-100">Registrarse</button>
                             </form>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap y Leaflet JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script>
-        const ciudades = {
-            "talca": [-35.4264, -71.6554],
-            "curico": [-34.9828, -71.2394],
-            "linares": [-35.8467, -71.5931],
-            "constitucion": [-35.3333, -72.4167],
-            "maule": [-35.5, -71.7],
-            "san clemente": [-35.5369, -71.4872],
-            "cauquenes": [-35.9672, -72.3225],
-            "parral": [-36.1433, -71.8264],
-            "san javier": [-35.5964, -71.7294]
-        };
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-        const actividades = {
-            "talca": [
-                { nombre: "Restaurante Andino", categoria: "comida", descripcion: "Gastronomía local con vista a la montaña." },
-                { nombre: "Museo O'Higginiano", categoria: "cultura", descripcion: "Museo histórico de Talca." },
-                { nombre: "Parque Maule", categoria: "paisajes", descripcion: "Zona verde con senderos." }
-            ],
-            "curico": [
-                { nombre: "Café Central", categoria: "cafes", descripcion: "Café y pastelería típica." },
-                { nombre: "Parque Estación", categoria: "paisajes", descripcion: "Ideal para caminatas y picnic." },
-                { nombre: "Teatro Municipal", categoria: "cultura", descripcion: "Actividades culturales." }
-            ]
-        };
-
-        function normalizar(texto) { return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim(); }
-
-        // Inicializar mapa
-        const map = L.map('map').setView([-35.5, -71.5], 8);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
-
-        // Marcadores
-        const markers = {};
-        for (let c in ciudades) {
-            const marker = L.marker(ciudades[c]).addTo(map);
-            markers[c] = marker;
-            marker.on("click", () => mostrarCiudad(c));
-        }
-
-        // Mostrar ciudad y actividades
-        function mostrarCiudad(ciudad) {
-            const coords = ciudades[ciudad];
-            map.setView(coords, 12);
-            mostrarActividades(ciudad);
-        }
-
-        function mostrarActividades(ciudad) {
-            const cont = document.getElementById("actividadCards");
-            cont.innerHTML = "";
-            if (!actividades[ciudad]) return;
-            actividades[ciudad].forEach(a => {
-                const col = document.createElement("div");
-                col.className = "col-md-4";
-                col.innerHTML = `<div class="card card-activity">
-          <div class="card-body">
-            <h5 class="card-title">${a.nombre}</h5>
-            <p class="card-text">${a.descripcion}</p>
-            <span class="badge bg-primary">${a.categoria}</span>
-          </div>
-        </div>`;
-                cont.appendChild(col);
-            });
-        }
-
-        // Buscar ciudad
-        const searchInput = document.getElementById("searchInput");
-        const searchBtn = document.getElementById("searchBtn");
-
-        function buscarCiudad() {
-            const texto = normalizar(searchInput.value);
-            for (let c in ciudades) {
-                if (normalizar(c) === texto) {
-                    mostrarCiudad(c);
-                    return;
-                }
-            }
-            alert("Ciudad no encontrada en la Región del Maule.");
-        }
-
-        searchBtn.addEventListener("click", buscarCiudad);
-        searchInput.addEventListener("keypress", (e) => { if (e.key === "Enter") buscarCiudad(); });
-
-        // Filtrar por categorías
-        document.querySelectorAll(".category-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const cat = btn.dataset.cat;
-                const cont = document.getElementById("actividadCards");
-                Array.from(cont.children).forEach(col => {
-                    if (!col.querySelector(".badge").textContent.includes(cat)) col.style.display = "none";
-                    else col.style.display = "block";
-                });
-            });
-        });
-    </script>
+    <!-- Tu JS -->
+    <script src="js/main.js"></script>
 </body>
 </html>

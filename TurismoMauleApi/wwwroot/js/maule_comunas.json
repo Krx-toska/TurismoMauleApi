@@ -1,0 +1,154 @@
+{
+  "plazas": [
+    {
+      "nombre_comuna": "Curicó",
+      "lat": -34.985376,
+      "lng": -71.239375
+    },
+    {
+      "nombre_comuna": "Hualañé",
+      "lat": -34.982000,
+      "lng": -71.804000
+    },
+    {
+      "nombre_comuna": "Licantén",
+      "lat": -34.985569,
+      "lng": -71.984616
+    },
+    {
+      "nombre_comuna": "Molina",
+      "lat": -35.113997,
+      "lng": -71.280005
+    },
+    {
+      "nombre_comuna": "Rauco",
+      "lat": -34.924607,
+      "lng": -71.316688
+    },
+    {
+      "nombre_comuna": "Romeral",
+      "lat": -34.960045,
+      "lng": -71.125303
+    },
+    {
+      "nombre_comuna": "Sagrada Familia",
+      "lat": -34.999044,
+      "lng": -71.381763
+    },
+    {
+      "nombre_comuna": "Teno",
+      "lat": -34.866493,
+      "lng": -71.161227
+    },
+    {
+      "nombre_comuna": "Vichuquén",
+      "lat": -34.884017,
+      "lng": -71.992371
+    },
+    {
+      "nombre_comuna": "Colbún",
+      "lat": -35.695962,
+      "lng": -71.406096
+    },
+    {
+      "nombre_comuna": "Linares",
+      "lat": -35.845473,
+      "lng": -71.597954
+    },
+    {
+      "nombre_comuna": "Longaví",
+      "lat": -35.965975,
+      "lng": -71.684672
+    },
+    {
+      "nombre_comuna": "Parral",
+      "lat": -36.131303,
+      "lng": -71.821942
+    },
+    {
+      "nombre_comuna": "Retiro",
+      "lat": -36.055443,
+      "lng": -71.765062
+    },
+    {
+      "nombre_comuna": "San Javier de Loncomilla",
+      "lat": -35.592459,
+      "lng": -71.735306
+    },
+    {
+      "nombre_comuna": "Villa Alegre",
+      "lat": -35.675218,
+      "lng": -71.744687
+    },
+    {
+      "nombre_comuna": "Yerbas Buenas",
+      "lat": -35.746413,
+      "lng": -71.582080
+    },
+    {
+      "nombre_comuna": "Constitución",
+      "lat": -35.333167,
+      "lng": -72.416580
+    },
+    {
+      "nombre_comuna": "Curepto",
+      "lat": -35.245710,
+      "lng": -71.981629
+    },
+    {
+      "nombre_comuna": "Empedrado",
+      "lat": -35.590822,
+      "lng": -72.277590
+    },
+    {
+      "nombre_comuna": "Maule",
+      "lat": -35.531100,
+      "lng": -71.688800
+    },
+    {
+      "nombre_comuna": "Pelarco",
+      "lat": -35.383829,
+      "lng": -71.446779
+    },
+    {
+      "nombre_comuna": "Pencahue",
+      "lat": -35.396109,
+      "lng": -71.799299
+    },
+    {
+      "nombre_comuna": "Rio Claro",
+      "lat": -35.265500,
+      "lng": -71.283400
+    },
+    {
+      "nombre_comuna": "San Clemente",
+      "lat": -35.537538,
+      "lng": -71.485881
+    },
+    {
+      "nombre_comuna": "San Rafael",
+      "lat": -35.305077,
+      "lng": -71.515721
+    },
+    {
+      "nombre_comuna": "Talca",
+      "lat": -35.426501,
+      "lng": -71.665996
+    },
+    {
+      "nombre_comuna": "Cauquenes",
+      "lat": -35.967091,
+      "lng": -72.315459
+    },
+    {
+      "nombre_comuna": "Chanco",
+      "lat": -35.734269,
+      "lng": -72.533151
+    },
+    {
+      "nombre_comuna": "Pelluhue",
+      "lat": -35.815020,
+      "lng": -72.576959
+    }
+  ]
+}
