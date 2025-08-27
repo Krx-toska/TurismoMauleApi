@@ -22,17 +22,32 @@ fetch('js/maule_comunas.json')
     })
     .catch(err => console.error(err));
 
-// Búsqueda con Enter
+// Función de búsqueda insensible a mayúsculas y tildes
+function buscarComuna() {
+    const busqueda = document.getElementById('ciudadInput').value
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    const comuna = dataComunas.find(c =>
+        c.nombre_comuna.toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .includes(busqueda)  // coincidencia parcial
+    );
+
+    if (comuna) {
+        map.setView([comuna.lat, comuna.lng], 14);
+    } else {
+        alert("La comuna no pertenece a la Región del Maule");
+    }
+}
+
+// Evento Enter
 document.getElementById('ciudadInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') {
-        const busqueda = e.target.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const comuna = dataComunas.find(c =>
-            c.nombre_comuna.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === busqueda
-        );
-        if (comuna) {
-            map.setView([comuna.lat, comuna.lng], 14);
-        } else {
-            alert("La comuna no pertenece a la Región del Maule");
-        }
+        buscarComuna();
     }
 });
+
+// Evento Botón Buscar
+document.getElementById('buscarBtn').addEventListener('click', buscarComuna);
+
