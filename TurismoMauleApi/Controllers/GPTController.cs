@@ -22,7 +22,7 @@ namespace TurismoMaule.Controllers
             try
             {
                 var client = _httpClientFactory.CreateClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
 
                 var body = new
                 {

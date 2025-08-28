@@ -1,10 +1,15 @@
 ﻿let dataComunas = [];
+let currentComuna = null;
+let currentCategory = null;
 
+// Inicializar mapa
 const map = L.map('map').setView([-35.423, -71.655], 8);
-
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
+
+// Contenedor de tarjetas
+const cardsContainer = document.getElementById('cardsContainer');
 
 // Cargar plazas desde JSON
 fetch('js/maule_comunas.json')
@@ -16,38 +21,115 @@ fetch('js/maule_comunas.json')
             const marker = L.marker([c.lat, c.lng]).addTo(map);
             marker.on('click', () => {
                 map.setView([c.lat, c.lng], 14);
+                currentComuna = c.nombre_comuna;
                 document.getElementById('ciudadInput').value = c.nombre_comuna;
+                cargarAtractivosGPT();
             });
         });
     })
     .catch(err => console.error(err));
 
-// Función de búsqueda insensible a mayúsculas y tildes
+// Buscar comuna
 function buscarComuna() {
     const busqueda = document.getElementById('ciudadInput').value
         .toLowerCase()
         .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
     const comuna = dataComunas.find(c =>
-        c.nombre_comuna.toLowerCase()
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-            .includes(busqueda)  // coincidencia parcial
+        c.nombre_comuna.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === busqueda
     );
 
     if (comuna) {
         map.setView([comuna.lat, comuna.lng], 14);
+        currentComuna = comuna.nombre_comuna;
+        cargarAtractivosGPT();
     } else {
         alert("La comuna no pertenece a la Región del Maule");
     }
 }
 
-// Evento Enter
-document.getElementById('ciudadInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-        buscarComuna();
-    }
+// Event listeners
+document.getElementById('buscarBtn').addEventListener('click', buscarComuna);
+document.getElementById('ciudadInput').addEventListener('keydown', e => { if (e.key === 'Enter') buscarComuna(); });
+
+// Filtrado por categoría
+document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentCategory = btn.dataset.category;
+        cargarAtractivosGPT();
+    });
 });
 
-// Evento Botón Buscar
-document.getElementById('buscarBtn').addEventListener('click', buscarComuna);
+// Función para generar atractivos usando GPT-4.1 mini
+async function cargarAtractivosGPT() {
+    const cardsContainer = document.getElementById('cardsContainer');
+    cardsContainer.innerHTML = `<p class="text-center">Cargando atractivos...</p>`;
 
+    let prompt = "Genera 5 atractivos turísticos de la Región del Maule en Chile.";
+    if (currentComuna) prompt += ` Filtra solo los de la comuna de ${currentComuna}.`;
+    if (currentCategory) prompt += ` Filtra solo los de la categoría ${currentCategory}.`;
+    prompt += " Devuelve un JSON array con objetos: {nombre, descripcion, imagen, categoria, comuna}.";
+
+    try {
+        const response = await fetch("https://api.openai.com/v1/responses", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer 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`
+            },
+            body: JSON.stringify({
+                model: "gpt-4.1-mini",
+                input: prompt
+            })
+        });
+
+        const data = await response.json();
+        let textOutput = data.output?.[0]?.content?.[0]?.text || "";
+
+        // Intentar parsear JSON
+        let atractivosGPT = [];
+        try {
+            atractivosGPT = JSON.parse(textOutput);
+        } catch {
+            console.warn("GPT no devolvió JSON limpio, intentando extraer objetos con regex...");
+            const matches = textOutput.match(/\{[^}]+\}/g);
+            if (matches) {
+                atractivosGPT = matches.map(m => {
+                    try { return JSON.parse(m); } catch { return null; }
+                }).filter(Boolean);
+            }
+        }
+
+        // Si sigue vacío
+        if (!atractivosGPT.length) {
+            cardsContainer.innerHTML = `<p class="text-center text-warning">No se pudieron generar atractivos.</p>`;
+            return;
+        }
+
+        // Crear tarjetas
+        cardsContainer.innerHTML = "";
+        atractivosGPT.forEach(a => {
+            const card = document.createElement('div');
+            card.className = "col-md-4 mb-4";
+            const imagen = a.imagen && a.imagen.startsWith("http") ? a.imagen : "images/placeholder.jpg";
+            card.innerHTML = `
+                <div class="card h-100">
+                    <img src="${imagen}" class="card-img-top" alt="${a.nombre}">
+                    <div class="card-body">
+                        <h5 class="card-title">${a.nombre}</h5>
+                        <p class="card-text">${a.descripcion}</p>
+                    </div>
+                </div>
+            `;
+            cardsContainer.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error(err);
+        cardsContainer.innerHTML = `<p class="text-danger text-center">Error cargando atractivos.</p>`;
+    }
+}
+
+
+// Inicializar con atractivos generales de la región
+cargarAtractivosGPT();
