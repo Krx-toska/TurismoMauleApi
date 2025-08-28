@@ -69,6 +69,8 @@ async function cargarAtractivosGPT() {
     if (currentComuna) prompt += ` Filtra solo los de la comuna de ${currentComuna}.`;
     if (currentCategory) prompt += ` Filtra solo los de la categoría ${currentCategory}.`;
     prompt += " Devuelve un JSON array con objetos: {nombre, descripcion, imagen, categoria, comuna}.";
+    
+
 
     try {
         const response = await fetch("https://api.openai.com/v1/responses", {
