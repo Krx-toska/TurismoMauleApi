@@ -53,7 +53,7 @@ using (var scope = app.Services.CreateScope())
             context.Lugares.AddRange(
                 new Lugar { Nombre = "Café Central", Ciudad = "Curicó", Categoria = "cafe", Calificacion = 4.5, Horario = "08:00-20:00", Direccion = "Av. Principal 123", Imagen = "", Nocturno = false },
                 new Lugar { Nombre = "Museo de Curicó", Ciudad = "Curicó", Categoria = "cultura", Calificacion = 4.8, Horario = "10:00-18:00", Direccion = "Calle Museo 1", Imagen = "", Nocturno = false },
-                new Lugar { Nombre = "Parque Río Claro", Ciudad = "Curicó", Categoria = "paisajes", Calificacion = 4.7, Horario = "08:00-19:00", Direccion = "Ruta 5 Sur", Imagen = "", Nocturno = false },
+                new Lugar { Nombre = "Parque Río Claro", Ciudad = "Curicó", Categoria = "Naturaleza", Calificacion = 4.7, Horario = "08:00-19:00", Direccion = "Ruta 5 Sur", Imagen = "", Nocturno = false },
                 new Lugar { Nombre = "Hostal Los Andes", Ciudad = "Curicó", Categoria = "hospedaje", Calificacion = 4.2, Horario = "", Direccion = "Calle Hostal 7", Imagen = "", Nocturno = false }
             );
             context.SaveChanges();

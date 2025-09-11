@@ -10,7 +10,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const cardsContainer = document.getElementById('cardsContainer');
 
 // Categorías válidas
-const categoriasValidas = ["Comida", "Cafés", "Cultura", "Paisajes", "Hospedaje"];
+const categoriasValidas = ["Comida", "Cafés", "Cultura", "Naturaleza", "Hospedaje"];
 
 // Fallback de imágenes locales según categoría
 function getFallbackImage(category) {
