@@ -1,58 +1,38 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TurismoMauleApi.Data;
+using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
-[Route("api/[controller]")]
-[ApiController]
-public class ItinerariosController : ControllerBase
+namespace TurismoMauleApi.Data
 {
-    private readonly TurismoContext _context;
-    public ItinerariosController(TurismoContext context) => _context = context;
-
-    // Crear itinerario
-    [HttpPost]
-    public IActionResult CrearItinerario([FromBody] Itinerario itinerario)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ItinerarioController : ControllerBase
     {
-        _context.Itinerarios.Add(itinerario);
-        _context.SaveChanges();
-        return Ok(new { message = "Itinerario creado", id = itinerario.Id });
-    }
+        private readonly TurismoContext _context;
 
-    // Obtener itinerarios de un usuario
-    [HttpGet("usuario/{usuarioId}")]
-    public IActionResult GetMisItinerarios(int usuarioId)
-    {
-        var itinerarios = _context.Itinerarios
-            .Include(i => i.Bloques)
-            .Where(i => i.UsuarioId == usuarioId)
-            .ToList();
-        return Ok(itinerarios);
-    }
+        public ItinerarioController(TurismoContext context)
+        {
+            _context = context;
+        }
 
-    // Editar itinerario
-    [HttpPut("{id}")]
-    public IActionResult EditarItinerario(int id, [FromBody] Itinerario updated)
-    {
-        var itin = _context.Itinerarios
-            .Include(i => i.Bloques)
-            .FirstOrDefault(i => i.Id == id);
-        if (itin == null) return NotFound();
+        [HttpGet]
+        public IActionResult GetItinerarios()
+        {
+            var itinerarios = _context.Itinerarios.ToList();
+            return Ok(itinerarios);
+        }
 
-        // Actualizamos nombre y bloques
-        itin.Nombre = updated.Nombre;
-        itin.Bloques = updated.Bloques;
-        _context.SaveChanges();
-        return Ok(itin);
-    }
+        [HttpPost]
+        [Authorize] // Solo usuarios loggeados pueden guardar
+        public IActionResult CrearItinerario([FromBody] Itinerario itinerario)
+        {
+            var userId = int.Parse(User.Identity.Name); // El token debe guardar userId como Name
+            itinerario.UsuarioId = userId;
 
-    // Eliminar itinerario
-    [HttpDelete("{id}")]
-    public IActionResult EliminarItinerario(int id)
-    {
-        var itin = _context.Itinerarios.Find(id);
-        if (itin == null) return NotFound();
-        _context.Itinerarios.Remove(itin);
-        _context.SaveChanges();
-        return Ok(new { message = "Itinerario eliminado" });
+            _context.Itinerarios.Add(itinerario);
+            _context.SaveChanges();
+            return Ok(itinerario);
+        }
     }
 }

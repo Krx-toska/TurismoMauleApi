@@ -87,7 +87,9 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">Turismo Maule</a>
             <div class="d-flex">
-                <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#authModal">Iniciar Sesión</button>
+                <span class="me-2 d-none" id="userNameDisplay"></span>
+                <button class="btn btn-outline-primary me-2" id="loginBtn" data-bs-toggle="modal" data-bs-target="#authModal">Iniciar Sesión</button>
+                <button class="btn btn-danger me-2 d-none" id="logoutBtn">Cerrar Sesión</button>
                 <a href="itinerario.html" class="btn btn-warning">Crear Itinerario</a>
             </div>
         </div>
@@ -144,14 +146,14 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="loginTab">
-                            <form>
+                            <form id="loginForm">
                                 <div class="mb-3"><label>Email</label><input type="email" class="form-control" required></div>
                                 <div class="mb-3"><label>Contraseña</label><input type="password" class="form-control" required></div>
                                 <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
                             </form>
                         </div>
                         <div class="tab-pane fade" id="registerTab">
-                            <form>
+                            <form id="registerForm">
                                 <div class="mb-3"><label>Nombre</label><input type="text" class="form-control" required></div>
                                 <div class="mb-3"><label>Email</label><input type="email" class="form-control" required></div>
                                 <div class="mb-3"><label>Contraseña</label><input type="password" class="form-control" required></div>

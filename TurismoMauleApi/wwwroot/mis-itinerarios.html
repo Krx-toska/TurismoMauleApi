@@ -61,7 +61,7 @@ const itinerariosContainer = document.getElementById("itinerariosContainer");
 
 // -------------------- LOGIN / REGISTER --------------------
 registerBtn.addEventListener("click", async () => {
-  const res = await fetch('https://localhost:5001/api/auth/register', {
+  const res = await fetch('https://localhost:7044/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type':'application/json' },
     body: JSON.stringify({ Nombre: emailInput.value, Email: emailInput.value, PasswordHash: passwordInput.value })
@@ -71,7 +71,7 @@ registerBtn.addEventListener("click", async () => {
 });
 
 loginBtn.addEventListener("click", async () => {
-  const res = await fetch('https://localhost:5001/api/auth/login', {
+  const res = await fetch('https://localhost:7044/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type':'application/json' },
     body: JSON.stringify({ Email: emailInput.value, PasswordHash: passwordInput.value })
@@ -91,7 +91,7 @@ loginBtn.addEventListener("click", async () => {
 // -------------------- CARGAR ITINERARIOS --------------------
 async function cargarItinerarios() {
   if(!jwtToken) return;
-  const res = await fetch(`https://localhost:5001/api/itinerarios/usuario/${usuarioId}`, {
+  const res = await fetch(`https://localhost:7044/api/itinerarios/usuario/${usuarioId}`, {
     headers: { 'Authorization': `Bearer ${jwtToken}` }
   });
   const itinerarios = await res.json();
@@ -121,7 +121,7 @@ async function cargarItinerarios() {
     // Eliminar itinerario
     card.querySelector(".eliminarBtn").addEventListener("click", async () => {
       if(!confirm("¿Eliminar este itinerario?")) return;
-      const resDel = await fetch(`https://localhost:5001/api/itinerarios/${itin.Id}`, {
+      const resDel = await fetch(`https://localhost:7044/api/itinerarios/${itin.Id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${jwtToken}` }
       });
