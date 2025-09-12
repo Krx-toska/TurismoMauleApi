@@ -8,11 +8,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ===================== Configuración DB SQLite =====================
+// 🔹 Config DB SQLite
 builder.Services.AddDbContext<TurismoContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ===================== CORS =====================
+// 🔹 CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -21,7 +21,8 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
-// ===================== JWT =====================
+
+// 🔹 JWT para validación de endpoints
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -30,7 +31,7 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(options =>
 {
     var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -42,33 +43,38 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// ===================== Controllers + Swagger =====================
+// 🔹 Registro de IHttpClientFactory para GPTController
+builder.Services.AddHttpClient();
+
+// 🔹 Controllers + Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ===================== Middlewares =====================
+// 🔹 Swagger en dev
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowAll");
-
-// Sirve archivos estáticos (wwwroot)
-app.UseDefaultFiles(); // Permite index.html como página por defecto
+// 🔹 Servir index.html y archivos estáticos
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
+
+// 🔹 Routing + Auth middlewares
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// ===================== Crear DB y usuario admin =====================
+// 🔹 Crear DB y usuario admin por defecto si no existe
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<TurismoContext>();
@@ -83,8 +89,8 @@ using (var scope = app.Services.CreateScope())
             PasswordHash = PasswordHelper.HashPassword("admin123"),
             Role = "Admin"
         };
-        db.Usuarios.Add(admin);
-        db.SaveChanges();
+       db.Usuarios.Add(admin);
+       db.SaveChanges();
     }
 }
 

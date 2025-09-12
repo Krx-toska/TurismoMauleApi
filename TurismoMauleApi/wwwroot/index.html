@@ -84,8 +84,10 @@
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">Turismo Maule</a>
-            <div class="d-flex">
-                <span id="userNameDisplay" class=" d-none"></span>
+            <div class="d-flex align-items-center">
+                <!-- Dropdown dinámico de usuario -->
+                <div id="userDropdownContainer"></div>
+                <!-- Botón de login -->
                 <button id="loginBtn" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#authModal">Iniciar Sesión</button>
                 <a href="itinerario.html" class="btn btn-warning">Crear Itinerario</a>
             </div>
@@ -148,6 +150,13 @@
                             <form id="registerForm">
                                 <div class="mb-3"><label>Nombre</label><input type="text" class="form-control" required></div>
                                 <div class="mb-3"><label>Email</label><input type="email" class="form-control" required></div>
+                                <div class="mb-3">
+                                    <label>Rol</label>
+                                    <select class="form-control" id="roleSelect" required>
+                                        <option value="Turista">Turista</option>
+                                        <option value="Empresa">Empresa</option>
+                                    </select>
+                                </div>
                                 <div class="mb-3"><label>Contraseña</label><input type="password" class="form-control" required></div>
                                 <button type="submit" class="btn btn-success w-100">Registrarse</button>
                             </form>
