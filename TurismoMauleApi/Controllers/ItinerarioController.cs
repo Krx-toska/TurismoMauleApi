@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TurismoMauleApi.Data;
-using Microsoft.AspNetCore.Authorization;
-using System.Linq;
+using TurismoMauleApi.Models;
 
-namespace TurismoMauleApi.Data
+namespace TurismoMauleApi.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class ItinerarioController : ControllerBase
     {
         private readonly TurismoContext _context;
@@ -16,23 +16,67 @@ namespace TurismoMauleApi.Data
             _context = context;
         }
 
+        // GET: api/Itinerario
         [HttpGet]
-        public IActionResult GetItinerarios()
+        public async Task<ActionResult<IEnumerable<Itinerario>>> GetItinerarios()
         {
-            var itinerarios = _context.Itinerarios.ToList();
-            return Ok(itinerarios);
+            return await _context.Itinerarios
+                .Include(i => i.Bloques)
+                .Include(i => i.Usuario)
+                .ToListAsync();
         }
 
-        [HttpPost]
-        [Authorize] // Solo usuarios loggeados pueden guardar
-        public IActionResult CrearItinerario([FromBody] Itinerario itinerario)
+        // GET: api/Itinerario/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Itinerario>> GetItinerario(int id)
         {
-            var userId = int.Parse(User.Identity.Name); // El token debe guardar userId como Name
-            itinerario.UsuarioId = userId;
+            var itinerario = await _context.Itinerarios
+                .Include(i => i.Bloques)
+                .Include(i => i.Usuario)
+                .FirstOrDefaultAsync(i => i.Id == id);
 
+            if (itinerario == null) return NotFound();
+            return itinerario;
+        }
+
+        // POST: api/Itinerario
+        [HttpPost]
+        public async Task<ActionResult<Itinerario>> CreateItinerario(Itinerario itinerario)
+        {
             _context.Itinerarios.Add(itinerario);
-            _context.SaveChanges();
-            return Ok(itinerario);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetItinerario), new { id = itinerario.Id }, itinerario);
+        }
+
+        // PUT: api/Itinerario/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateItinerario(int id, Itinerario itinerario)
+        {
+            if (id != itinerario.Id) return BadRequest();
+
+            _context.Entry(itinerario).State = EntityState.Modified;
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Itinerarios.Any(e => e.Id == id)) return NotFound();
+                throw;
+            }
+            return NoContent();
+        }
+
+        // DELETE: api/Itinerario/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteItinerario(int id)
+        {
+            var itinerario = await _context.Itinerarios.FindAsync(id);
+            if (itinerario == null) return NotFound();
+
+            _context.Itinerarios.Remove(itinerario);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

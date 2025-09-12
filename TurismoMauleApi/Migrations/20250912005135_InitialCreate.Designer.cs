@@ -11,8 +11,8 @@ using TurismoMauleApi.Data;
 namespace TurismoMauleApi.Migrations
 {
     [DbContext(typeof(TurismoContext))]
-    [Migration("20250911211907_Inicial")]
-    partial class Inicial
+    [Migration("20250912005135_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,34 +20,13 @@ namespace TurismoMauleApi.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
 
-            modelBuilder.Entity("TurismoMauleApi.Data.Itinerario", b =>
+            modelBuilder.Entity("TurismoMauleApi.Models.Bloque", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("FechaCreacion")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Itinerarios");
-                });
-
-            modelBuilder.Entity("TurismoMauleApi.Data.ItinerarioBloque", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Bloque")
+                    b.Property<string>("Categoria")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -55,20 +34,40 @@ namespace TurismoMauleApi.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ItinerarioId")
+                    b.Property<int>("ItinerarioId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("LugarId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ItinerarioId");
 
-                    b.ToTable("ItinerarioBloques");
+                    b.ToTable("Bloques");
                 });
 
-            modelBuilder.Entity("TurismoMauleApi.Data.Lugar", b =>
+            modelBuilder.Entity("TurismoMauleApi.Models.Itinerario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Itinerarios");
+                });
+
+            modelBuilder.Entity("TurismoMauleApi.Models.Lugar", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,10 +84,6 @@ namespace TurismoMauleApi.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Detalle")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Direccion")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -100,6 +95,12 @@ namespace TurismoMauleApi.Migrations
                     b.Property<string>("Imagen")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<double>("Lat")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("Lng")
+                        .HasColumnType("REAL");
 
                     b.Property<bool>("Nocturno")
                         .HasColumnType("INTEGER");
@@ -113,7 +114,7 @@ namespace TurismoMauleApi.Migrations
                     b.ToTable("Lugares");
                 });
 
-            modelBuilder.Entity("TurismoMauleApi.Data.Usuario", b =>
+            modelBuilder.Entity("TurismoMauleApi.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -140,14 +141,29 @@ namespace TurismoMauleApi.Migrations
                     b.ToTable("Usuarios");
                 });
 
-            modelBuilder.Entity("TurismoMauleApi.Data.ItinerarioBloque", b =>
+            modelBuilder.Entity("TurismoMauleApi.Models.Bloque", b =>
                 {
-                    b.HasOne("TurismoMauleApi.Data.Itinerario", null)
+                    b.HasOne("TurismoMauleApi.Models.Itinerario", "Itinerario")
                         .WithMany("Bloques")
-                        .HasForeignKey("ItinerarioId");
+                        .HasForeignKey("ItinerarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Itinerario");
                 });
 
-            modelBuilder.Entity("TurismoMauleApi.Data.Itinerario", b =>
+            modelBuilder.Entity("TurismoMauleApi.Models.Itinerario", b =>
+                {
+                    b.HasOne("TurismoMauleApi.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("TurismoMauleApi.Models.Itinerario", b =>
                 {
                     b.Navigation("Bloques");
                 });

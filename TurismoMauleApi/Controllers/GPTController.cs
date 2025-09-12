@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace TurismoMaule.Controllers
+namespace TurismoMauleApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -49,6 +49,6 @@ namespace TurismoMaule.Controllers
 
     public class CiudadRequest
     {
-        public string Ciudad { get; set; }
+        public string Ciudad { get; set; } = null!;
     }
 }

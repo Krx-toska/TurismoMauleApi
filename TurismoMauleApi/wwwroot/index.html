@@ -81,21 +81,17 @@
     </style>
 </head>
 <body>
-
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">Turismo Maule</a>
             <div class="d-flex">
-                <span class="me-2 d-none" id="userNameDisplay"></span>
-                <button class="btn btn-outline-primary me-2" id="loginBtn" data-bs-toggle="modal" data-bs-target="#authModal">Iniciar Sesión</button>
-                <button class="btn btn-danger me-2 d-none" id="logoutBtn">Cerrar Sesión</button>
+                <span id="userNameDisplay" class=" d-none"></span>
+                <button id="loginBtn" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#authModal">Iniciar Sesión</button>
                 <a href="itinerario.html" class="btn btn-warning">Crear Itinerario</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero -->
     <section class="hero">
         <div class="hero-content container">
             <h1 class="display-4 fw-bold">Descubre lo mejor de la VII Región</h1>
@@ -114,17 +110,13 @@
         </div>
     </section>
 
-    <!-- Mapa -->
     <section class="container my-5">
         <h2 class="fw-bold mb-3">Mapa</h2>
         <div id="map"></div>
     </section>
 
-    <!-- Atractivos -->
     <section class="container" id="atractivos">
-        <div class="row" id="cardsContainer">
-            <!-- Tarjetas generadas dinámicamente -->
-        </div>
+        <div class="row" id="cardsContainer"></div>
     </section>
 
     <!-- Modal Login / Registro -->
@@ -136,12 +128,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <ul class="nav nav-tabs mb-3" id="authTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginTab" type="button">Login</button>
+                    <ul class="nav nav-tabs mb-3" id="authTabs">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#loginTab">Login</button>
                         </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerTab" type="button">Registro</button>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#registerTab">Registro</button>
                         </li>
                     </ul>
                     <div class="tab-content">
@@ -171,7 +163,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- Tu JS -->
+    <!-- JS principal -->
     <script src="js/main.js"></script>
 </body>
 </html>

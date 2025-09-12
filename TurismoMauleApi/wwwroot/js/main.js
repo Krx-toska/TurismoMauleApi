@@ -2,7 +2,6 @@
 const loginForm = document.getElementById("loginForm")
 const registerForm = document.getElementById("registerForm")
 const loginBtn = document.getElementById("loginBtn")
-const logoutBtn = document.getElementById("logoutBtn")
 const userNameDisplay = document.getElementById("userNameDisplay")
 
 function updateUserUI() {
@@ -11,18 +10,19 @@ function updateUserUI() {
 
     if (token) {
         loginBtn?.classList.add("d-none")
-        logoutBtn?.classList.remove("d-none")
         if (userNameDisplay) {
-            userNameDisplay.textContent = `Hola, ${userName}`
+            userNameDisplay.innerHTML = `Hola, ${userName} <button class="btn btn-sm btn-outline-danger ms-2" id="logoutBtn">Cerrar sesión</button>`
             userNameDisplay.classList.remove("d-none")
+            document.getElementById("logoutBtn").addEventListener("click", logout)
         }
     } else {
         loginBtn?.classList.remove("d-none")
-        logoutBtn?.classList.add("d-none")
         userNameDisplay?.classList.add("d-none")
+        userNameDisplay.innerHTML = ""
     }
 }
 
+// ============================== Login
 loginForm?.addEventListener("submit", async e => {
     e.preventDefault()
     const email = loginForm.querySelector("input[type='email']").value
@@ -48,6 +48,7 @@ loginForm?.addEventListener("submit", async e => {
     }
 })
 
+// ============================== Registro
 registerForm?.addEventListener("submit", async e => {
     e.preventDefault()
     const nombre = registerForm.querySelector("input[type='text']").value
@@ -62,7 +63,6 @@ registerForm?.addEventListener("submit", async e => {
         })
         if (!res.ok) throw new Error("Error al registrar usuario")
         const data = await res.json()
-        // Loguear automáticamente
         localStorage.setItem("token", data.token)
         localStorage.setItem("userId", data.userId)
         localStorage.setItem("userName", data.nombre)
@@ -75,14 +75,13 @@ registerForm?.addEventListener("submit", async e => {
     }
 })
 
-logoutBtn?.addEventListener("click", () => {
+// ============================== Logout
+function logout() {
     localStorage.removeItem("token")
     localStorage.removeItem("userId")
     localStorage.removeItem("userName")
     updateUserUI()
-})
-
-updateUserUI()
+}
 
 // ============================== Mapas, Comunas y Categorías
 let dataComunas = []
@@ -147,12 +146,6 @@ if (mapEl) {
         if (!cardsContainer) return
         cardsContainer.innerHTML = `<p class="text-center">Cargando atractivos...</p>`
 
-        let prompt = `Genera 5 atractivos turísticos de la Región del Maule en Chile.`
-        if (currentComuna) prompt += ` Filtra solo los de la comuna de ${currentComuna}.`
-        prompt += ` Clasifica cada panorama solo dentro de estas categorías: ${categoriasValidas.join(", ")}.`
-        if (currentCategory) prompt += ` Filtra solo los de la categoría ${currentCategory}.`
-        prompt += ` Devuelve un JSON array con objetos: {nombre, descripcion, categoria}.`
-
         try {
             const response = await fetch("/api/GPT/atractivos", {
                 method: "POST",
@@ -195,72 +188,5 @@ if (mapEl) {
     cargarAtractivosGPT()
 }
 
-// ============================== Itinerario
-const actividades = {
-    desayuno: ["Café Central", "Panadería Andina", "Desayuno Gourmet"],
-    opcional: ["Parque Nacional", "Museo", "Tour cultural"],
-    almuerzo: ["Restaurante Andino", "Comida típica local", "Bistró Cordillera"],
-    onceCena: ["Café de la plaza", "Bar local", "Restaurante nocturno"],
-    opcionalNocturno: ["Bar con música en vivo", "Cine local", "Paseo nocturno"],
-    alojamiento: ["Hotel Cordillera", "Hostal Andino", "Cabañas Rurales"]
-}
-
-let usuarioLogeado = !!localStorage.getItem("token")
-
-function crearDropdown(categoria, seleccionado) {
-    const select = document.createElement("select")
-    select.className = "form-select mt-2"
-    actividades[categoria].forEach(act => {
-        const option = document.createElement("option")
-        option.value = act
-        option.text = act
-        if (act === seleccionado) option.selected = true
-        select.appendChild(option)
-    })
-    return select
-}
-
-document.getElementById("generarItinerarioBtn")?.addEventListener("click", () => {
-    const container = document.getElementById("itinerarioContainer")
-    if (!container) return
-    container.innerHTML = ""
-    document.getElementById("itinerarioActions").style.display = "block"
-
-    const bloques = [
-        { hora: "08:00", nombre: "Desayuno", categoria: "desayuno" },
-        { hora: "10:00", nombre: "Actividad opcional", categoria: "opcional" },
-        { hora: "13:00", nombre: "Almuerzo", categoria: "almuerzo" },
-        { hora: "15:00", nombre: "Actividad opcional", categoria: "opcional" },
-        { hora: "17:00", nombre: "Actividad opcional", categoria: "opcional" },
-        { hora: "19:00", nombre: "Once/Cena", categoria: "onceCena" },
-        { hora: "21:00", nombre: "Actividad nocturna", categoria: "opcionalNocturno" },
-        { hora: "23:00", nombre: "Alojamiento", categoria: "alojamiento" }
-    ]
-
-    bloques.forEach(bloque => {
-        const card = document.createElement("div")
-        card.className = "card p-3 itinerary-block"
-        card.innerHTML = `<h5>${bloque.hora} - ${bloque.nombre}</h5><div class="actividadSeleccionada">${actividades[bloque.categoria][0]}</div>`
-        card.querySelector(".actividadSeleccionada").addEventListener("click", function () {
-            this.replaceWith(crearDropdown(bloque.categoria, this.innerText))
-        })
-        container.appendChild(card)
-    })
-})
-
-document.getElementById("exportarBtn")?.addEventListener("click", () => {
-    html2canvas(document.getElementById("itinerarioContainer")).then(canvas => {
-        const link = document.createElement("a")
-        link.download = "itinerario.png"
-        link.href = canvas.toDataURL()
-        link.click()
-    })
-})
-
-document.getElementById("guardarBtn")?.addEventListener("click", () => {
-    if (!localStorage.getItem("token")) {
-        new bootstrap.Modal(document.getElementById('authModal')).show()
-        return
-    }
-    alert("Itinerario guardado! (simulado)")
-})
+// ============================== Inicializar UI
+updateUserUI()

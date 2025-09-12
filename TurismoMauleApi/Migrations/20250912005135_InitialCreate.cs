@@ -6,26 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TurismoMauleApi.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Itinerarios",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UsuarioId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Nombre = table.Column<string>(type: "TEXT", nullable: false),
-                    FechaCreacion = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Itinerarios", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Lugares",
                 columns: table => new
@@ -37,8 +22,9 @@ namespace TurismoMauleApi.Migrations
                     Categoria = table.Column<string>(type: "TEXT", nullable: false),
                     Calificacion = table.Column<double>(type: "REAL", nullable: false),
                     Horario = table.Column<string>(type: "TEXT", nullable: false),
-                    Detalle = table.Column<string>(type: "TEXT", nullable: false),
                     Direccion = table.Column<string>(type: "TEXT", nullable: false),
+                    Lat = table.Column<double>(type: "REAL", nullable: false),
+                    Lng = table.Column<double>(type: "REAL", nullable: false),
                     Imagen = table.Column<string>(type: "TEXT", nullable: false),
                     Nocturno = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
@@ -64,46 +50,72 @@ namespace TurismoMauleApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ItinerarioBloques",
+                name: "Itinerarios",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Bloque = table.Column<string>(type: "TEXT", nullable: false),
-                    LugarId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Hora = table.Column<string>(type: "TEXT", nullable: false),
-                    ItinerarioId = table.Column<int>(type: "INTEGER", nullable: true)
+                    UsuarioId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Fecha = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ItinerarioBloques", x => x.Id);
+                    table.PrimaryKey("PK_Itinerarios", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ItinerarioBloques_Itinerarios_ItinerarioId",
+                        name: "FK_Itinerarios_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuarios",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Bloques",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Nombre = table.Column<string>(type: "TEXT", nullable: false),
+                    Categoria = table.Column<string>(type: "TEXT", nullable: false),
+                    Hora = table.Column<string>(type: "TEXT", nullable: false),
+                    ItinerarioId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bloques", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bloques_Itinerarios_ItinerarioId",
                         column: x => x.ItinerarioId,
                         principalTable: "Itinerarios",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ItinerarioBloques_ItinerarioId",
-                table: "ItinerarioBloques",
+                name: "IX_Bloques_ItinerarioId",
+                table: "Bloques",
                 column: "ItinerarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Itinerarios_UsuarioId",
+                table: "Itinerarios",
+                column: "UsuarioId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ItinerarioBloques");
+                name: "Bloques");
 
             migrationBuilder.DropTable(
                 name: "Lugares");
 
             migrationBuilder.DropTable(
-                name: "Usuarios");
+                name: "Itinerarios");
 
             migrationBuilder.DropTable(
-                name: "Itinerarios");
+                name: "Usuarios");
         }
     }
 }

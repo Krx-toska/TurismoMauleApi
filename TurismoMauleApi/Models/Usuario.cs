@@ -1,11 +1,11 @@
-﻿namespace TurismoMauleApi.Data
+﻿namespace TurismoMauleApi.Models
 {
     public class Usuario
     {
         public int Id { get; set; }
-        public string Nombre { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string PasswordHash { get; set; } = "";
-        public string Role { get; set; } = "Turista"; // Valor por defecto
+        public string Nombre { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string PasswordHash { get; set; } = null!;
+        public string Role { get; set; } = "User";
     }
 }

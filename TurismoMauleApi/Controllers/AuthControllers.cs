@@ -1,67 +1,75 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TurismoMauleApi.Models;
 using TurismoMauleApi.Data;
-using BCrypt.Net;
-using TurismoMauleApi.Services;
+using TurismoMauleApi.Helpers;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace TurismoMauleApi.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly TurismoContext _context;
-        private readonly JwtService _jwtService;
+        private readonly IConfiguration _config;
 
-        public AuthController(TurismoContext context, JwtService jwtService)
+        public AuthController(TurismoContext context, IConfiguration config)
         {
             _context = context;
-            _jwtService = jwtService;
+            _config = config;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] Usuario usuario)
         {
             if (await _context.Usuarios.AnyAsync(u => u.Email == usuario.Email))
-                return BadRequest(new { message = "El email ya está registrado." });
+                return BadRequest(new { message = "El email ya está en uso" });
 
-            // Hashear contraseña antes de guardar
-            usuario.PasswordHash = BCrypt.Net.BCrypt.HashPassword(usuario.PasswordHash);
-            usuario.Role = "Turista";
-
+            usuario.PasswordHash = PasswordHelper.HashPassword(usuario.PasswordHash);
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
 
-            // Generar token de autenticación
-            var token = _jwtService.Generate(usuario.Id, usuario.Nombre);
-
-            return Ok(new
-            {
-                usuario.Id,
-                usuario.Nombre,
-                usuario.Email,
-                usuario.Role,
-                Token = token
-            });
+            var token = GenerateJwtToken(usuario);
+            return Ok(new { token, userId = usuario.Id, nombre = usuario.Nombre });
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Usuario loginData)
+        public async Task<IActionResult> Login([FromBody] Usuario usuario)
         {
-            var user = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == loginData.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginData.PasswordHash, user.PasswordHash))
-                return Unauthorized(new { message = "Email o contraseña incorrectos" });
+            var dbUser = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuario.Email);
+            if (dbUser == null || PasswordHelper.HashPassword(usuario.PasswordHash) != dbUser.PasswordHash)
+                return Unauthorized(new { message = "Credenciales incorrectas" });
 
-            var token = _jwtService.Generate(user.Id, user.Nombre);
+            var token = GenerateJwtToken(dbUser);
+            return Ok(new { token, userId = dbUser.Id, nombre = dbUser.Nombre });
+        }
 
-            return Ok(new
+        private string GenerateJwtToken(Usuario user)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
             {
-                user.Id,
-                user.Nombre,
-                user.Email,
-                user.Role,
-                Token = token
-            });
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim("id", user.Id.ToString()),
+                new Claim("nombre", user.Nombre),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+
+            var token = new JwtSecurityToken(
+                _config["Jwt:Issuer"],
+                _config["Jwt:Audience"],
+                claims,
+                expires: DateTime.UtcNow.AddMinutes(60),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

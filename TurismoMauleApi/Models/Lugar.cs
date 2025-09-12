@@ -1,4 +1,4 @@
-﻿namespace TurismoMauleApi.Data
+﻿namespace TurismoMauleApi.Models
 {
     public class Lugar
     {
@@ -9,6 +9,8 @@
         public double Calificacion { get; set; }
         public string Horario { get; set; } = string.Empty;
         public string Direccion { get; set; } = string.Empty;
+        public double Lat { get; set; }
+        public double Lng { get; set; }
         public string Imagen { get; set; } = string.Empty;
         public bool Nocturno { get; set; } 
     }
