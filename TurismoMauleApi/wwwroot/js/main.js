@@ -4,8 +4,8 @@ const registerForm = document.getElementById("registerForm");
 const loginBtn = document.getElementById("loginBtn");
 const userDropdownContainer = document.getElementById("userDropdownContainer");
 
-// ============================== Actualizar UI según session storage
-async function updateUserUI() {
+// ============================== Actualizar UI según sessionStorage
+function updateUserUI() {
     const nombre = sessionStorage.getItem("nombre");
     const role = sessionStorage.getItem("role");
 
@@ -22,9 +22,8 @@ async function updateUserUI() {
                     </ul>
                 </div>
             `;
-            document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+            document.getElementById("logoutBtn")?.addEventListener("click", () => {
                 sessionStorage.clear();
-                await fetch("/api/Auth/logout", { method: "POST" });
                 updateUserUI();
             });
         }
@@ -55,8 +54,10 @@ loginForm?.addEventListener("submit", async e => {
         const data = await res.json();
         sessionStorage.setItem("nombre", data.nombre);
         sessionStorage.setItem("role", data.role);
+        sessionStorage.setItem("userId", data.userId);
+        sessionStorage.setItem("jwtToken", data.token); // Guardar token para GPT
 
-        await updateUserUI();
+        updateUserUI();
 
         const modalEl = document.getElementById('authModal');
         const modal = bootstrap.Modal.getInstance(modalEl);
@@ -89,9 +90,11 @@ registerForm?.addEventListener("submit", async e => {
 
         const data = await res.json();
         sessionStorage.setItem("nombre", data.nombre);
-        sessionStorage.setItem("nombre", data.role);
+        sessionStorage.setItem("role", data.role);
+        sessionStorage.setItem("userId", data.userId);
+        sessionStorage.setItem("jwtToken", data.token);
 
-        await updateUserUI();
+        updateUserUI();
 
         const modalEl = document.getElementById('authModal');
         const modal = bootstrap.Modal.getInstance(modalEl);
@@ -103,7 +106,7 @@ registerForm?.addEventListener("submit", async e => {
 });
 
 // ============================== Inicializar UI
-updateUserUI();
+window.addEventListener('DOMContentLoaded', updateUserUI);
 
 // ============================== Mapas, Comunas y Categorías
 let dataComunas = [];
@@ -168,12 +171,18 @@ if (mapEl) {
         if (!cardsContainer) return;
         cardsContainer.innerHTML = `<p class="text-center">Cargando atractivos...</p>`;
         try {
+            const token = sessionStorage.getItem("jwtToken") || "";
             const response = await fetch("/api/GPT/atractivos", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify({ Ciudad: currentComuna || "" })
             });
             const data = await response.json();
+            console.log(data);
             let atractivosGPT = [];
             try { atractivosGPT = JSON.parse(data); } catch { }
 

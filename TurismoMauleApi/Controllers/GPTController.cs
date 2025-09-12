@@ -21,8 +21,24 @@ namespace TurismoMauleApi.Controllers
         {
             try
             {
+                // ✅ Obtener el JWT del usuario desde header Authorization
+                string? userJwt = null;
+                if (Request.Headers.ContainsKey("Authorization"))
+                {
+                    var authHeader = Request.Headers["Authorization"].ToString();
+                    if (authHeader.StartsWith("Bearer "))
+                        userJwt = authHeader.Substring("Bearer ".Length).Trim();
+                }
+
+                if (string.IsNullOrEmpty(userJwt))
+                    return Unauthorized(new { message = "Usuario no autorizado" });
+
+                // Crear cliente HTTP
                 var client = _httpClientFactory.CreateClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
+
+                // Aquí seguimos usando tu token de OpenAI
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
+                    "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");
 
                 var body = new
                 {
